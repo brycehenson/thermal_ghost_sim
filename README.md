@@ -8,6 +8,7 @@ The goals of this project are
 * Test if thermal ghost imaging is practicaly realizable in our system.
   * QE
   * FLux
+  * Resolution
 * Come up with an algorithm for constructing fake data with arbitrary correlations
   * Thermal correlations
   * Arbitrary function
@@ -20,7 +21,6 @@ The goals of this project are
   
 
 
-Demonstrate that the spatio-temporal correlations between the ports of a beamsplitter with a thermal cloud as the input can be used to reconstruct the 
 
 
 ## Contributions  
