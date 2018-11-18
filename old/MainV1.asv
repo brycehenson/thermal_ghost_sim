@@ -1,0 +1,133 @@
+%numerical ghost imaging
+%simulate thermal ghost imaging system
+%create a thermal distributed cloud and then add in correlations to
+%measure the correlation function
+%then split the cloud into two and try to do ghost imaging
+
+%to measure the correlations more quickly and save memory overhead will bin on the fly
+%myCluster = parcluster('local')
+%myCluster.NumWorkers = 50
+%saveProfile(myCluster)
+%parpool('local',50)
+
+tic;
+num=500;
+shots=200;
+corr_frac=1;
+corr_width=0.2;
+QE=1;
+REdges=linspace(0,25,101);
+
+counts_txy={};
+counts_in_shot=[];
+for n=1:shots
+    shot=reshape(randn(num*3,1),[3,num]);
+    coor_chance=rand(num,1)<corr_frac;
+    if sum(coor_chance)>0
+        delpos=reshape(randn(sum(coor_chance)*3,1),[3,sum(coor_chance)]);
+        shot_with_corr=[shot,shot(:,coor_chance)+delpos];
+    else
+        shot_with_corr=shot;
+    end
+    
+    det_chance=rand(size(shot_with_corr,2),1)<QE;
+    if sum(det_chance)>1
+        det_counts=shot_with_corr(:, det_chance);
+        %sort in time to make sure everything is robust to that
+        %[values, order] = sort(det_counts(1,:));
+        %det_counts=det_counts(:,order);
+        counts_txy=[counts_txy,{det_counts}];
+    else
+        counts_txy=[counts_txy,{[]}];
+    end
+    counts_in_shot=[counts_in_shot,size(counts_txy{n},2)];
+end
+total_counts=size([counts_txy{:}],2);
+fprintf('total counts over all shots %i \n',total_counts)
+fprintf('mean per shot %i \n',total_counts/shots)
+fprintf('rough pairs per shot %i \n',CountUpperTriangle(total_counts/shots))
+fprintf('rough total pairs %i \n',CountUpperTriangle(total_counts/shots)*shots)
+
+%find un-norm g2
+delta=[];
+edges_shot=[];
+parfor n=1:shots
+    shot_txy=counts_txy{n};
+    pairs=UpperTriangle(size(shot_txy,2));
+    fprintf('calc corr shot %3i \n',n)
+    for i=1:size(pairs,2)
+        delta=[delta,shot_txy(:,pairs(1,i))-shot_txy(:,pairs(2,i))];
+    end
+    [counts_shot,edges_shot]=histcounts(rad_delta_shot,REdges);
+    rad_delta_shot=sqrt(sum(delta.^2,1));
+    
+end
+fprintf('same count diff sum over all shots %i \n',size(delta,2))
+
+
+
+counts_shot/
+
+
+centers_shot=(edges_shot(2:end)+edges_shot(1:end-1))/2;
+figure(1)
+plot(centers_shot,counts_shot)
+ylabel('G corr')
+xlabel('radius')
+saveas(gcf,'InShot.png')
+
+%then calculate the normalization
+
+approx_pairs=CountUpperTriangle(total_counts)
+
+accurate_pairs=0;
+for n=1:shots
+    accurate_pairs=accurate_pairs+(total_counts-counts_in_shot(n))*counts_in_shot(n)*0.5;
+end
+
+accurate_pairs/approx_pairs
+
+
+%the approach that we will take will be to 'slice' a single count from each
+%shot
+slices=min(counts_in_shot);
+pairs=UpperTriangle(shots);
+slice_pairs=CountUpperTriangle(shots);
+sampled_pairs=slice_pairs*slices;
+delta_norm=zeros(3,sampled_pairs);
+for n=1:slices
+    sub_data=zeros(3,shots);
+    for p=1:shots
+        sub_data(:,p)=counts_txy{p}(:,n);
+    end
+    for i=1:slice_pairs
+        delta_norm(:,(n-1)*slice_pairs+i)=sub_data(:,pairs(i,1))-sub_data(:,pairs(i,2));
+    end
+    fprintf('calc uncorr slic %3i \n',n)
+end
+
+rad_delta_norm=sqrt(sum(delta.^2,1));
+
+
+[counts_norm,edges_norm]=histcounts(rad_delta_norm,REdges);
+
+counts_norm=counts_norm*(accurate_pairs/sampled_pairs);
+
+centers_norm=(edges_norm(2:end)+edges_norm(1:end-1))/2;
+figure(2)
+plot(centers_norm,counts_norm)
+ylabel('G uncorr')
+set(gcf,'Color',[1,1,1])
+xlabel('radius')
+saveas(gcf,'BetweenShot.png')
+
+
+figure(3)
+plot(centers_norm,counts_shot./counts_norm)
+saveas(gcf,'NormCorr.png')
+
+
+
+toc;
+
+
