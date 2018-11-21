@@ -20,6 +20,12 @@ The goals of this project are
   * see if the [fast binning algorithms](https://github.com/brycehenson/fast_search_based_histogram) i have previously developed can be helpfull 
   
 
+## Complexity
+My thoughts on how the various methods scale. n counts in each of m shots, p bins for the correlation,d for the dimenionality
+* point by point
+  * computing cartesian differences to all other points O(m*3*((1/2)*n^2-n))
+  * histogram differences O( m*((1/2)*n^2-n)*3*(1 [differences]+log(p) [bin search]+1 [increment bin]) )
+  * calcuate full normalization O( ((1/2)*(m*n)^2-(m*n))*3*(1+log(p)) ), in reality you only need a small fraction of the full counts to normalize with
 
 
 
