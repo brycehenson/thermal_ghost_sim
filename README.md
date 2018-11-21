@@ -23,13 +23,13 @@ The goals of this project are
 ## Complexity
 My thoughts on how the various methods scale. n counts in each of m shots, p bins for the correlation, in dimensionality d
 * point by point
-  * computing cartesian differences to all other points O(m·3·((1/2)*n^2-n))
-  * histogram differences O( m·((1/2)·n^2-n)·d·(1 [differences]+log(p) [bin search]+1 [increment bin]) )
+  * computing cartesian differences to all other points **O(m·3·((1/2)*n^2-n))**
+  * histogram differences **O( m·((1/2)·n^2-n)·d·(1 [differences]+log(p) [bin search]+1 [increment bin]) )**
   * calcuate full normalization O( ((1/2)*(m*n)^2-(m*n))*3*(1+log(p)) ), in reality you only need a small fraction of the full counts to normalize with
 * FFT
-  * Bin O( m·d·n·log(q) )
-  * FFT padded (may be a way to remove this factor of two) O( m·( d·n·log(q)+ (2q)^d log((2q)^d) ) )
-  * sum up shots O( m·( d·n·log(q)+ (2q)^d log((2q)^d) + q ) )
+  * Bin **O( m·d·n·log(q) )**
+  * FFT padded (may be a way to remove this factor of two) **O( m·( d·n·log(q)+ (2q)^d log((2q)^d) ) )**
+  * sum up shots **O( m·( d·n·log(q)+ (2q)^d log((2q)^d) + q ) )**
 
 
 
