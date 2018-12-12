@@ -10,7 +10,7 @@
 %saveProfile(myCluster)
 %parpool('local',50)
 tic;
-constants
+
 num_tot=1000;
 %num=80;
 shots=50000;

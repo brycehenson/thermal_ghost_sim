@@ -1,0 +1,3 @@
+[submodule "lib/Core_BEC_Analysis"]
+	path = lib/Core_BEC_Analysis
+	url = https://github.com/brycehenson/Core_BEC_Analysis.git
