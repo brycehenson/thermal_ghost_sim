@@ -23,6 +23,13 @@ The goals of this project are
   * FLux
   * Resolution
 
+## Methods
+* Radial correlation
+  * to give uniform error need to space the bins as 1/r^2
+* cartesian
+  * largre number of bins needed
+  * can smooth before dividing
+  * can integerate radialy to give the equivelent to Radial correlation
 
 ## Complexity
 My thoughts on how the various methods scale. n counts in each of m shots, p bins for the correlation, in dimensionality d
