@@ -31,7 +31,17 @@ My thoughts on how the various methods scale. n counts in each of m shots, p bin
   * FFT padded (may be a way to remove this factor of two) **O( m·( d·n·log(p)+ (2p)^d log((2p)^d) ) )**
   * sum up shots **O( m·( d·n·log(p)+ (2p)^d log((2p)^d) + p ) )**
 
-
+## Install
+``` 
+git clone --recursive https://github.com/brycehenson/thermal_ghost_sim.git
+```
+then to update 
+```
+git submodule update --init --recursive 
+git submodule foreach --recursive git pull origin master
+```
+  
+  
 
 ## Contributions  
 This project would not have been possible without the many open source tools that it is based on. In no particular order: 

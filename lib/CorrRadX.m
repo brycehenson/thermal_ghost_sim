@@ -19,16 +19,16 @@ parfor_progress_imp(updates);
 x_bins=zeros(shots,size(x_bins,2));
 rad_bins=zeros(shots,size(rad_bins,2));
 pairs_count=zeros(1,shots);
-parfor n=1:shots
+for n=1:shots
     shot_txy=counts_txy{n};
     pairs=UpperTriangle(size(shot_txy,2));
     pairs_count(n)=size(pairs,2);
     %fprintf('shot %3i \n',n)
-    delta=zeros(3,size(pairs,2));
+    delta=zeros(size(pairs,2),3);
     for i=1:size(pairs,2)
-        delta(:,i)=shot_txy(:,pairs(1,i))-shot_txy(:,pairs(2,i));
+        delta(i,:)=shot_txy(pairs(1,i),:)-shot_txy(pairs(2,i),:);
     end
-    xmask=abs(delta(1,:))<corr.window(1) & abs(delta(3,:))<corr.window(3);
+    xmask=abs(delta(:,1))<corr.window(1) & abs(delta(:,3))<corr.window(3);
     x_bins(n,:)=histcounts(delta(2,xmask),corr.xedges);
     rad_bins(n,:)=histcounts(sqrt(sum(delta.^2,1)),corr.redges);
     if rand<(1/update_frac)

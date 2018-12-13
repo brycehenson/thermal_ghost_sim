@@ -11,44 +11,59 @@
 %parpool('local',50)
 tic;
 
-num_tot=1000;
+shot_counts=100;
 %num=80;
-shots=50000;
-corr_frac=0.010;
+number_shots=5000;
+corr_frac=1;
 tof=0.416;
-qe=0.1;
-%matlabs zeta is bugging out
-zeta3=1.202056903159594285399738161511449990764986292;
-
+qe=1;
 omegax=100*2*pi;
 omegay=omegax;
 omegaz=omegax;
+trun=tc_int*1.5; %set the temp to something abovecritical
+
+
+
+%% Setting Up The Enviorment
+%add all subfolders to the path
+this_folder = fileparts(which(mfilename));
+% Add that folder plus all subfolders to the path.
+addpath(genpath(this_folder));
+
+
+%matlabs zeta is bugging out
+zeta3=zeta(3);
+
 omega_bar=(omegax*omegay*omegaz)^(1/3);
 omega_mean=(omegax+omegay+omegaz)/3;
 
-tc_non_int= (hb*omega_bar*num_tot^(1/3))/(kb*zeta3^(1/3));
-abar=sqrt(hb/(m*omega_bar));
-tc_int=tc_non_int+(-0.73*num_tot^(-1/3)*omega_mean/omega_bar-...
-    1.33*num_tot^(1/6)*ahe_scat/abar)*tc_non_int;  %pethick eq11 .14
+tc_non_int= (const.hb*omega_bar*shot_counts^(1/3))/(const.kb*zeta3^(1/3));
+abar=sqrt(const.hb/(const.mhe*omega_bar));
+tc_int=tc_non_int+(-0.73*shot_counts^(-1/3)*omega_mean/omega_bar-...
+    1.33*shot_counts^(1/6)*const.ahe_scat/abar)*tc_non_int;  %pethick eq11 .14
 
 
-trun=tc_int*1.5; %set the temp to something above critical
+
+%call the constants function that makes some globals
+hebec_constants 
+
 
 %from Theory for a Hanbury Brown Twiss experiment with a ballistically expanding cloud of cold atoms
-corr_widthx=hb*tof*sqrt((omegax^2)/(kb*trun))/sqrt(m);
-corr_widthy=hb*tof*sqrt((omegay^2)/(kb*trun))/sqrt(m);
-corr_widthz=hb*tof*sqrt((omegaz^2)/(kb*trun))/sqrt(m);
-therm_width=tof*sqrt(3/2)*sqrt(2*kb*trun/m);
+corr_widthx=const.hb*tof*sqrt((omegax^2)/(const.kb*trun))/sqrt(const.mhe);
+corr_widthy=const.hb*tof*sqrt((omegay^2)/(const.kb*trun))/sqrt(const.mhe);
+corr_widthz=const.hb*tof*sqrt((omegaz^2)/(const.kb*trun))/sqrt(const.mhe);
+therm_width=tof*sqrt(3/2)*sqrt(2*const.kb*trun/const.mhe);
 
 
-mode_occ=(1/sqrt(2))*num_tot*(corr_widthx*corr_widthy*corr_widthz/(therm_width)^3);
-corr.window=[corr_widthx,corr_widthy,corr_widthz]/4;
+mode_occ=(1/sqrt(2))*shot_counts*(corr_widthx*corr_widthy*corr_widthz/(therm_width)^3);
+corr_opts=[]
+corr_opts.window=[corr_widthx,corr_widthy,corr_widthz]/4;
 
-corr.redges=linspace(0,corr_widthx*4,40);
-corr.xedges=linspace(-corr_widthx*5,corr_widthx*5,40);
+corr_opts.redges=linspace(0,corr_widthx*4,40);
+corr_opts.xedges=linspace(-corr_widthx*5,corr_widthx*5,40);
 
-num=round(num_tot/(1+corr_frac));
-norm_chunk_size=round(4*qe*num);
+num_corrected=round(shot_counts/(1+corr_frac));
+norm_chunk_size=round(4*qe*num_corrected);
 fprintf('critical temp                 %2.3e \n',tc_int)
 fprintf('thermal width                 %2.3e \n',therm_width)
 fprintf('corr widthx                   %2.3e \n',corr_widthx)
@@ -61,10 +76,10 @@ fprintf('predicted corr amp            %2.3e \n',1+1/mode_occ)
 %generate some correlated data
 fprintf('generating test data \n')
 counts_txy={};
-counts_in_shot=zeros(shots,1);
-parfor n=1:shots
-    shot=reshape(randn(num*3,1)*therm_width,[3,num]);
-    coor_chance=rand(num,1)<corr_frac;
+counts_in_shot=zeros(number_shots,1);
+parfor n=1:number_shots
+    shot=reshape(randn(num_corrected*3,1)*therm_width,[3,num_corrected]);
+    coor_chance=rand(num_corrected,1)<corr_frac;
     if sum(coor_chance)>0
         delpos=reshape(randn(sum(coor_chance)*3,1),[3,sum(coor_chance)]).*repmat([corr_widthz;corr_widthx;corr_widthy],[1,sum(coor_chance)]);
         shot_with_corr=[shot,shot(:,coor_chance)+delpos];
@@ -87,9 +102,12 @@ parfor n=1:shots
 end
 total_counts=size([counts_txy{:}],2);
 fprintf('total counts over all shots   %2.3e \n',total_counts)
-fprintf('mean per shot                 %2.3e \n',total_counts/shots)
-fprintf('rough pairs per shot          %2.3e \n',CountUpperTriangle(total_counts/shots))
-fprintf('rough total pairs             %2.3e \n',CountUpperTriangle(total_counts/shots)*shots)
+fprintf('mean per shot                 %2.3e \n',total_counts/number_shots)
+fprintf('rough pairs per shot          %2.3e \n',CountUpperTriangle(total_counts/number_shots))
+fprintf('rough total pairs             %2.3e \n',CountUpperTriangle(total_counts/number_shots)*number_shots)
+
+%%
+
 
 fprintf('calculating in shot correlations \n')
 shotscorr=CorrRadX(corr,counts_txy);
@@ -98,11 +116,11 @@ figure(1);
 clf
 set(gcf,'color','w');
 subplot(2,3,1)
-plot(shotscorr.rad_centers,shotscorr.rad_bins.*shotscorr.rad_centers.^-2/shotscorr.pairs)
+plot(shotscorr_opts.rad_centers,shotscorr_opts.rad_bins.*shotscorr_opts.rad_centers.^-2/shotscorr_opts.pairs)
 title('In Shot Rad Dist')
 xlabel('Radial Seperation')
 subplot(2,3,4)
-plot(shotscorr.x_centers,shotscorr.x_bins/shotscorr.pairs)
+plot(shotscorr_opts.x_centers,shotscorr_opts.x_bins/shotscorr_opts.pairs)
 title('In Shot X Dist (windowed)')
 xlabel('X Seperation')
 
@@ -111,7 +129,7 @@ xlabel('X Seperation')
 approx_pairs=CountUpperTriangle(total_counts);
 fprintf('rough total pairs in norm     %2.3e \n',approx_pairs)
 accurate_pairs=0;
-for n=1:shots
+for n=1:number_shots
     accurate_pairs=accurate_pairs+(total_counts-counts_in_shot(n))*counts_in_shot(n)*0.5;
 end
 fprintf('actual total pairs in norm    %2.3e \n',accurate_pairs)
@@ -133,24 +151,24 @@ end
 fprintf('calculating inter-shot correlations \n ')
 normcorr=CorrRadX(corr,counts_chunked);
 
-fprintf('sampled frac of norm pairs    %3.3e\n',normcorr.pairs/accurate_pairs)
-pair_sample_factor=(normcorr.pairs/shotscorr.pairs);
+fprintf('sampled frac of norm pairs    %3.3e\n',normcorr_opts.pairs/accurate_pairs)
+pair_sample_factor=(normcorr_opts.pairs/shotscorr_opts.pairs);
 fprintf('sampled norm/corr pairs       %2.3e \n',pair_sample_factor)
 
 
 subplot(2,3,2)
-plot(normcorr.rad_centers,normcorr.rad_bins.*normcorr.rad_centers.^-2/normcorr.pairs)
+plot(normcorr_opts.rad_centers,normcorr_opts.rad_bins.*normcorr_opts.rad_centers.^-2/normcorr_opts.pairs)
 title('Between Shot Rad Dist')
 subplot(2,3,5)
-plot(normcorr.x_centers,normcorr.x_bins/normcorr.pairs)
+plot(normcorr_opts.x_centers,normcorr_opts.x_bins/normcorr_opts.pairs)
 title('Between Shot X Dist (windowed)')
 subplot(2,3,6)
-xg2=pair_sample_factor*shotscorr.x_bins./normcorr.x_bins;
-plot(shotscorr.x_centers,xg2)
+xg2=pair_sample_factor*shotscorr_opts.x_bins./normcorr_opts.x_bins;
+plot(shotscorr_opts.x_centers,xg2)
 title('g2 X')
 subplot(2,3,3)
-radg2=pair_sample_factor*shotscorr.rad_bins./normcorr.rad_bins;
-plot(shotscorr.rad_centers,radg2)
+radg2=pair_sample_factor*shotscorr_opts.rad_bins./normcorr_opts.rad_bins;
+plot(shotscorr_opts.rad_centers,radg2)
 title('g2 Rad')
 pause(0.1);
 saveas(gcf,'Correlations.png')
