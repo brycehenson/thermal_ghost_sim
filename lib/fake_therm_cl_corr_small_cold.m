@@ -1,5 +1,5 @@
-function fake_data=fake_cl_corr(number_shots,qe)
-% test function on that makes some colinearly correlated data g(2)~2
+function fake_data=fake_therm_cl_corr_small_cold(number_shots,qe)
+% test function on that makes some colinearly correlated data g(2)~1.85
 %return data in the same structure that import_mcp_tdc_data produces
 
 shot_counts=360; %number of counts in each shot

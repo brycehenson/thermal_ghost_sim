@@ -1,10 +1,11 @@
-function fake_data=fake_cl_corr(number_shots,qe)
-% test function on that makes some colinearly correlated data g(2)~2
-%return data in the same structure that import_mcp_tdc_data produces
+function fake_data=fake_therm_cl_corr_small_hot(number_shots,qe)
+% test function on that makes some colinearly correlated data with g(2)~1.8
+%returns data in the same structure/format that import_mcp_tdc_data produces
 
-shot_counts=360; %number of counts in each shot
-corr_frac=1;
-therm_width=0.5; %isotropic in 3d
+%dont change there or the corr amp will change
+shot_counts=100; %number of counts in each shot
+corr_frac=0.017;
+therm_width=1; %isotropic in 3d
 corr_widthx=0.1;
 corr_widthy=0.1;
 corr_widthz=0.1;
