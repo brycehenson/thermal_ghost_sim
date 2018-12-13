@@ -1,0 +1,8 @@
+# Windows default autosave extension
+*.asv
+# Data files
+*.mat
+# dropbox
+*.dropbox
+# winows files
+*.ini
