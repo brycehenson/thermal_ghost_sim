@@ -10,6 +10,7 @@ clf
 subplot(1,2,1)
 text_image=ones(180,350);
 text_image=insertText(text_image,[-50,-80],'He*','FontSize',200,'BoxOpacity',0,'Font','Arial' );
+text_image=imresize(text_image,10,'bicubic');
 text_image = imbinarize(text_image);
 text_image= squeeze(text_image(:,:,1));
 text_image=imcomplement(text_image);
@@ -18,7 +19,7 @@ colormap('gray')
 %%
 subplot(1,2,2)
 
-[B,L] = bwboundaries(text_image,'noholes');
+[B,L] = bwboundaries(text_image); %why does the output not label holes!
 imshow(label2rgb(L, @jet, [.5 .5 .5]))
 hold on
 for k = 1:length(B)
@@ -28,8 +29,65 @@ end
 
 %%
 figure(4)
-boundary = B{3};
-plot(boundary(:,2), boundary(:,1), 'k', 'LineWidth', 2)
+subplot(1,3,1)
+boundary = B{4};
+plot(polyshape(boundary(:,2), boundary(:,1)))
+%plot(boundary(:,2), boundary(:,1), 'k', 'LineWidth', 2)
+
+
+subplot(1,3,2)
+poly_simple=[];
+[poly_simple(:,2),poly_simple(:,1)]=reducem(boundary(:,2), boundary(:,1),5);
+plot(polyshape(poly_simple(:,2), poly_simple(:,1)))
+
+
+subplot(1,3,3)
+% this is a bit labor intensive as it requires manual tuning for each segment
+poly2 = reduce_poly(boundary', 60);
+poly_draw = [poly2 poly2(:,1)];
+plot(polyshape(poly_draw(2,:), poly_draw(1,:)))
+
+
+
+%% Make a cell array of the simplified polydons and scale to the unit interval
+he_text_segments= {};
+he_text_segments.holes=logical([0,0,0,1]);
+he_text_segments.polygons={};
+image_size=size(text_image);
+image_size(1)=-image_size(1);
+image_shift=[0.27,-0.5];
+image_rescale=[2,2];
+for ii=1:size(B,1)
+    boundary = B{ii};
+    poly_simple=[];
+    [poly_simple(:,2),poly_simple(:,1)]=reducem(boundary(:,2), boundary(:,1),5);
+    %plot(polyshape(poly_simple(:,2), poly_simple(:,1)))
+    poly_simple=poly_simple./repmat(image_size,[size(poly_simple,1),1]);
+     poly_simple=poly_simple+repmat(image_shift,[size(poly_simple,1),1]);
+     poly_simple=poly_simple.*repmat(image_rescale,[size(poly_simple,1),1]);
+    he_text_segments.polygons{ii}=poly_simple;
+end
+
+
+figure(5)
+clf
+hold on
+for ii=1:numel(he_text_segments.polygons)
+    plot(polyshape(he_text_segments.polygons{ii}(:,2), he_text_segments.polygons{ii}(:,1)))
+end
+hold off
+
+
+%% Test the method
+txy_rand=(rand(1e6,3)-0.5)*2;
+mask_in_holes=zeros(size(he_text_segments.holes,2),size(txy_rand,1));
+for kk=1:numel(he_text_segments.polygons)
+    polygons=he_text_segments.polygons{kk};
+    mask_in_holes(kk,:)=inpolygon(txy_rand(:,2),txy_rand(:,3),polygons(:,2),polygons(:,1));
+end
+%find the case that the count is in any of the segments but in none of the holes
+mask=any(mask_in_holes(~he_text_segments.holes,:),1) & ~any(mask_in_holes(he_text_segments.holes,:),1) ;%& ~mask_in_holes(2,:);
+plot(txy_rand(mask,2),txy_rand(mask,3),'.')
 
 
 
