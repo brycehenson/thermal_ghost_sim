@@ -2,12 +2,19 @@
 % main questions
 % should the in shot pairs be counted in the number of possible normalization pairs
 
+%% Setting Up The Enviorment
+%add all subfolders to the path
+this_folder = fileparts(which(mfilename));
+% Add that folder plus all subfolders to the path.
+addpath(genpath(this_folder));
 
-%first fake dataset
+
+%% fake dataset
 %fake_data=fake_cl_corr(100,1);
 %fake_data=fake_therm_cl_corr_small_hot(5000,1)
-fake_therm_cl_corr_small_cold(10000,1)
-%fake_data=fake_cl_corr(1000,0.1);
+%fake_data=fake_therm_cl_corr_small_cold(1000,1);
+%fake_data=fake_super_cl_corr(100,1);
+fake_data=fake_cl_corr(100,0.01);
 
 total_counts=sum(fake_data.num_counts);
 %%
@@ -17,7 +24,7 @@ corr_opts=[];
 corr_opts.one_d_dimension=1;
 corr_opts.one_d_window=[[-1,1];[-1,1];[-1,1]]*5e-2;
 one_d_range=0.6;
-corr_opts.one_d_edges=linspace(-one_d_range,one_d_range,40);
+corr_opts.one_d_edges=linspace(-one_d_range,one_d_range,80);
 corr_opts.one_d_smoothing=0.025;
 
 corr_opts.do_three_d_corr=false;
@@ -29,7 +36,7 @@ corr_opts.three_d_edges={linspace(corr_opts.one_d_window(1,1),corr_opts.one_d_wi
 rmax=0.6;
 rmin=1e-3;
 %corr_opts.redges=linspace(rmin,rmax,40);
-corr_opts.redges=sqrt(linspace(rmin^2,rmax^2,300));
+corr_opts.redges=sqrt(linspace(rmin^2,rmax^2,500));
 corr_opts.rad_smoothing=0.025;
 
 

@@ -23,6 +23,12 @@ The goals of this project are
   * FLux
   * Resolution
 
+## To DO
+- benchamrk other ndhitograming codes https://au.mathworks.com/matlabcentral/fileexchange/3957-ndhistc  
+- build a correlation calculator library
+- build a wrapper that deals with the chunking & normalization
+  
+  
 ## Methods
 * Radial correlation
   * to give uniform error need to space the bins as 1/r^2
@@ -42,6 +48,10 @@ My thoughts on how the various methods scale. n counts in each of m shots, p bin
   * FFT padded (may be a way to remove this factor of two) **O( m·( d·n·log(p)+ (2p)^d log((2p)^d) ) )**
   * sum up shots **O( m·( d·n·log(p)+ (2p)^d log((2p)^d) + p ) )**
 
+  
+  
+  
+  
 ## Install
 ``` 
 git clone --recursive https://github.com/brycehenson/thermal_ghost_sim.git

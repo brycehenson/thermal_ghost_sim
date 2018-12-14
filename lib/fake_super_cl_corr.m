@@ -1,21 +1,13 @@
-function fake_data=fake_cl_corr(number_shots,qe)
-% test function on that makes some colinearly correlated data g(2)~2
+function fake_data=fake_super_cl_corr(number_shots,qe)
+% test function on that makes some very colinearly correlated data with g^(2)~20
 %return data in the same structure that import_mcp_tdc_data produces
 
-shot_counts=10000; %number of counts in each shot
+shot_counts=500; %number of counts in each shot
 corr_frac=1;
 therm_width=0.5; %isotropic in 3d
-corr_widthx=0.0005;
-corr_widthy=0.0005;
-corr_widthz=0.0005;
-
-
-% shot_counts=10000; %number of counts in each shot
-% corr_frac=1;
-% therm_width=0.5; %isotropic in 3d
-% corr_widthx=0.001;
-% corr_widthy=0.001;
-% corr_widthz=0.001;
+corr_widthx=0.005;
+corr_widthy=0.005;
+corr_widthz=0.005;
 
 fake_data=[];
 num_corrected=round(shot_counts/(1+corr_frac));
