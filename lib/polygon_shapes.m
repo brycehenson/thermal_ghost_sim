@@ -1,7 +1,4 @@
-
-pgon = polyshape([0  2 2],[2 0 0 2]);
-plot(pgon)
-
+%develop a windowing function from some text
 
 %%
 figure(3)
@@ -41,12 +38,6 @@ poly_simple=[];
 plot(polyshape(poly_simple(:,2), poly_simple(:,1)))
 
 
-subplot(1,3,3)
-% this is a bit labor intensive as it requires manual tuning for each segment
-poly2 = reduce_poly(boundary', 60);
-poly_draw = [poly2 poly2(:,1)];
-plot(polyshape(poly_draw(2,:), poly_draw(1,:)))
-
 
 
 %% Make a cell array of the simplified polydons and scale to the unit interval
@@ -55,7 +46,7 @@ he_text_segments.holes=logical([0,0,0,1]);
 he_text_segments.polygons={};
 image_size=size(text_image);
 image_size(1)=-image_size(1);
-image_shift=[0.27,-0.5];
+image_shift=[0.46,-0.5];
 image_rescale=[2,2];
 for ii=1:size(B,1)
     boundary = B{ii};

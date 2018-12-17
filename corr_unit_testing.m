@@ -14,10 +14,85 @@ addpath(genpath(this_folder));
 %fake_data=fake_therm_cl_corr_small_hot(5000,1)
 %fake_data=fake_therm_cl_corr_small_cold(1000,1);
 %fake_data=fake_super_cl_corr(100,1);
-fake_data=fake_cl_corr(100,0.01);
+%fake_data=fake_cl_corr_medium_hot(100,0.1); %proof of principle for ghost imaging
+fake_data=fake_cl_corr(100,0.1);
 
-total_counts=sum(fake_data.num_counts);
+%look at the histogram of the density
+rmax=0.2;
+rmin=1e-5;
+corr_opts.redges=sqrt(linspace(rmin^2,rmax^2,500));
+%corr_opts.redges=linspace(rmin,rmax,500);
+
+rad_volume=(4/3)*pi*(corr_opts.redges(2:end).^3-corr_opts.redges(1:end-1).^3);
+all_txy=vertcat(fake_data.counts_txy{:});
+rad=sqrt(sum(all_txy.^2,2));
+rad_centers=(corr_opts.redges(2:end)+corr_opts.redges(1:end-1))/2;
+[rad_bins,corr_opts.redges]=histcounts(rad,corr_opts.redges);
+figure(3)
+clf
+plot(rad_centers,rad_bins./rad_volume)
+
+
+
+%% Test the new any_g2_type function
+%fake_data=fake_cl_corr(100,1);
+fake_data=fake_cl_corr_medium_hot(5000,0.1)
 %%
+corr_opts=[];
+corr_opts.type='1d_cart_cl';
+corr_opts.one_d_dimension=1;
+corr_opts.one_d_window=[[-1,1];[-1,1];[-1,1]]*5e-2;
+one_d_range=0.05;
+corr_opts.one_d_edges=linspace(-one_d_range,one_d_range,300);
+
+corr_opts.low_mem=nan;
+corr_opts.plots=true;
+corr_opts.norm_samp_factor=2;
+corr_opts.attenuate_counts=1;
+corr_opts.do_pre_mask=true;
+corr_opts.sorted_dir=1;
+corr_opts.sort_norm=true;
+
+
+corr_opts.one_d_smoothing=nan;
+%improved code  
+%28.4 s with premask & sort chunks 
+%30.12  with premask & no sort chunks 
+%28.57 new with no premask
+%28.61 s old with no premask
+
+% old code 27.137 s
+tic
+out=calc_any_g2_type(corr_opts,fake_data);
+toc
+
+
+%%
+
+corr_opts.type='radial_cl';
+corr_opts.one_d_window=[[-1,1];[-1,1];[-1,1]]*5e-2; %only used for prewindow
+rmax=0.05;
+rmin=1e-4;
+corr_opts.redges=sqrt(linspace(rmin^2,rmax^2,600));
+%corr_opts.redges=linspace(rmin,rmax,500);
+corr_opts.rad_smoothing=0;
+
+corr_opts.attenuate_counts=1;
+corr_opts.one_d_smoothing=nan;
+%improved code  
+%28.4 s with premask & sort chunks 
+%30.12  with premask & no sort chunks 
+%28.57 new with no premask
+%28.61 s old with no premask
+
+% old code 27.137 s
+tic
+out=calc_any_g2_type(corr_opts,fake_data);
+toc
+
+
+
+%% vvvvvvvOLD STUFF vvvvvv
 
 
 corr_opts=[];
@@ -117,3 +192,6 @@ pause(0.1);
 fprintf('max g2 rad       %4.2f \n',max(radg2))
 fprintf('       x         %4.2f \n',max(xg2))
 toc;
+
+
+

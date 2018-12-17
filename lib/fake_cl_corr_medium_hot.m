@@ -1,13 +1,13 @@
-function fake_data=fake_super_cl_corr(number_shots,qe)
+function fake_data=fake_cl_corr_medium_hot(number_shots,qe)
 % test function on that makes some colinearly correlated data g(2)~2
 %return data in the same structure that import_mcp_tdc_data produces
 
-shot_counts=2000; %number of counts in each shot
+shot_counts=20000; %number of counts in each shot
 corr_frac=1;
 therm_width=0.5; %isotropic in 3d
-corr_width(1)=0.0015;
-corr_width(2)=0.0015;
-corr_width(3)=0.0015;
+corr_width(1)=0.001;
+corr_width(2)=0.001;
+corr_width(3)=0.001;
 
 
 % shot_counts=10000; %number of counts in each shot
