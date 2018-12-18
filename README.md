@@ -9,7 +9,7 @@ Thermal ghost imaging exploits the correlations that exist between thermaly dist
 ## Simulation Results
 | ![A comparison runtime for different hist algorithms](/results/10k_shots_10k_counts_1e-3_corr_len.png "Fig1") | 
 |:--:| 
- **Figure 1**- Simulation of thermal ghost imaging with 10k shots (5k with mask,5k for normalization), 10k counts per shot and correlation width of 1e-3 (normalized to thermal width). Top row is the raw coincidence density with the mask, lower row is divided by the same without the mask. |
+ **Figure 1**- Simulation of thermal ghost imaging with 10k shots (5k with mask,5k for normalization), 10k counts per shot and correlation width of 1e-3 (normalized to thermal width) **(with superthermal correlations)**. Top row is the raw coincidence density with the mask, lower row is divided by the same without the mask. |
 
 
 ## Goals
