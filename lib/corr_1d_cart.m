@@ -70,13 +70,17 @@ else
 end
 
 if ~isfield(corr_opts,'cl_or_bb')
-    error('corr_opts.cl_or_bb not specified!do you want co-linear or back-to-back? ')
+    error('corr_opts.cl_or_bb not specified!do you want co-linear(false) or back-to-back (true)? ')
 end
 
 if isfield(corr_opts,'do_pre_mask') && ~isfield(corr_opts,'sorted_dir')
         error('you must pass corr_opts.sorted_dir with corr_opts.do_pre_mask')
 elseif ~isfield(corr_opts,'do_pre_mask')
     corr_opts.do_pre_mask=false;
+end
+
+if ~isfield(corr_opts,'progress_updates')
+    corr_opts.progress_updates=50;
 end
 
 num_counts=cellfun(@(x)size(x,1),counts_txy);
@@ -150,7 +154,6 @@ if corr_opts.low_mem %calculate with the low memory mode
             else
                 delta=shot_txy(ii,:)-delta_multiplier*shot_txy(ii+1:num_counts_shot,:);
             end
-            
             one_d_mask_pos=true(size(delta,1),1); %initalize the mask
             one_d_mask_neg=one_d_mask_pos;
             %run the mask in all the queued dimensions

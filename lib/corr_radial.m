@@ -47,6 +47,9 @@ else
     end
 end
 
+if ~isfield(corr_opts,'progress_updates')
+    corr_opts.progress_updates=50;
+end
 
 num_counts=cellfun(@(x)size(x,1),counts_txy);
 if ~isfield(corr_opts,'low_mem') || isnan(corr_opts.low_mem)
