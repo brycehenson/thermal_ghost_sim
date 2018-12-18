@@ -1,15 +1,19 @@
-function out=corr_1d_cart(corr_opts,counts_txy)
-% corr_1d_cart - %a low/high memory implementation of the one D correlation
+function out=corr_radial_deuar(corr_opts,counts_txy)
+% deuar_corr - %a low/high memory implementation of the deuar correlator
 % Notes:
-% This g2 correlator is very fast and can be thought as taking a tube along the full 3d cartesian g2 but without having
-% to deal with how slow that is. It does this by windowing the pair differences in two dimensions then histograming the
-% differences in the remaining dimension(one_d_dimension). Because the correlation is effectively integerated in those 
-% two window dimensions the window width (one_d_window) must be a small fraction of the correlation length (in those dimensions)
-%to avoid suppressing the measured corelation amplitude.
+% This is a 'non traditional' correlaor that is used to see how 'bloby' the data is
 %
-% Usage:
+% Usage:s
 % pass in a cell array of counts and then calculate the correlations using a
 % bin on the fly method (low mem) or a bin all diferences (high mem)
+% differences can be prewindowed using fast_sorted_mask (optional) in both cases to reduce memory & comp requirements.
+% differences are then windowed in two dimensions and the correlation calculated in the remaining axis.
+% conforms to output formats of import_mcp_tdc_data
+
+
+% corr_1d_cart - %a low/high memory implementation of the one Deuar correlator
+% pass in a cell array of counts and then calculate the correlations using a
+% difference on the fly method (low mem) or a bin all diferences (high mem)
 % differences can be prewindowed using fast_sorted_mask (optional) in both cases to reduce memory & comp requirements.
 % differences are then windowed in two dimensions and the correlation calculated in the remaining axis.
 % conforms to output formats of import_mcp_tdc_data
@@ -20,7 +24,7 @@ function out=corr_1d_cart(corr_opts,counts_txy)
 %	counts_txy                  - as a cell array of zxy counts size=[num_counts,3]
 %               must be ordered in z for pre window optimzation
 %   corr_opts                   - structure of input options
-%           .one_d_window       - [[tmin,tmax];[xmin,xmax];[ymin,ymax]]; %limiits in the one_d_dimension are ignored
+%           .one_d_window       - [[tmin,tmax];[xmin,xmax];[ymin,ymax]];
 %           .cl_or_bb           - colinear(false) or bb (true)
 %           .one_d_edges        - edges of histogram bins for the correlation
 %           .one_d_dimension    - dimension to calculate correlation
@@ -52,8 +56,6 @@ function out=corr_1d_cart(corr_opts,counts_txy)
 %   - input checking
 %	- document output better
 %	- more outputs
-%   - for the high memory option I dont have to store the prewindowed dimension
-%     - might be a little messy to implement
 %
 % Author: Bryce Henson
 % email: Bryce.Henson@live.com
