@@ -50,6 +50,7 @@ function out=corr_1d_cart(corr_opts,counts_txy)
 %
 % Known BUGS/ Possible Improvements
 %   - see if better to prevent prevent diff vector initalization when using high meme with prewindowing to save memory
+%   - auto memory option does not work on linux, should defalult to low_mem
 %   - input checking
 %	- document output better
 %	- more outputs
