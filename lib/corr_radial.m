@@ -55,10 +55,11 @@ num_counts=cellfun(@(x)size(x,1),counts_txy);
 if ~isfield(corr_opts,'low_mem') || isnan(corr_opts.low_mem)
     mem_temp=memory;
     max_arr_size=floor(mem_temp.MaxPossibleArrayBytes/(8*2)); %divide by 8 for double array size and 2 as a saftey factor
-    %premasking can dramaticaly reduce the number of pairs that are stored in memory
-    %this might be a factor of ~1/100
+
     if corr_opts.do_pre_mask
-        premask_factor=1e-2; 
+        premask_factor=1;  %premasking currently uses the same amount of memory 
+        %premasking could in principle dramaticaly reduce the number of pairs that are stored in memory
+        %this might be a factor of ~1/100 to be implemnted in future
     else
         premask_factor=1;
     end

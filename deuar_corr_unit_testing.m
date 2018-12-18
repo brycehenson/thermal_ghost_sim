@@ -38,7 +38,7 @@ scatter3(counts_chunked{1}(:,1),counts_chunked{1}(:,2),counts_chunked{1}(:,3))
 %%
 sfigure(1);
 subplot(3,1,1)
-plot(deuar_corr.mean_nth_rad_diff_norm(2:end))
+plot(deuar_corr.mean_nth_rad_diff_raw(2:end))
 ylabel('regularized distance')
 xlabel('nth nearest point')
 pause(1e-3)

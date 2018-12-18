@@ -49,6 +49,7 @@ function out=corr_1d_cart(corr_opts,counts_txy)
 % See also: corr_unit_testing, calc_any_g2_type, import_mcp_tdc_data
 %
 % Known BUGS/ Possible Improvements
+%   - see if better to prevent prevent diff vector initalization when using high meme with prewindowing to save memory
 %   - input checking
 %	- document output better
 %	- more outputs
@@ -87,10 +88,11 @@ num_counts=cellfun(@(x)size(x,1),counts_txy);
 if ~isfield(corr_opts,'low_mem') || isnan(corr_opts.low_mem)
     mem_temp=memory;
     max_arr_size=floor(mem_temp.MaxPossibleArrayBytes/(8*2)); %divide by 8 for double array size and 2 as a saftey factor
-    %premasking can dramaticaly reduce the number of pairs that are stored in memory
-    %this might be a factor of ~1/100
+    
     if corr_opts.do_pre_mask
-        premask_factor=1e-2; 
+        premask_factor=1;  %premasking currently uses the same amount of memory 
+        %premasking could in principle dramaticaly reduce the number of pairs that are stored in memory
+        %this might be a factor of ~1/100 to be implemnted in future
     else
         premask_factor=1;
     end
