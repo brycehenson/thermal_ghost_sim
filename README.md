@@ -63,7 +63,7 @@ My thoughts on how the various methods scale. n counts in each of m shots, p bin
   
 ## Install
 ``` 
-git clone --recursive https://github.com/brycehenson/thermal_ghost_sim.git
+git clone --recurse-submodules -j8  https://github.com/brycehenson/thermal_ghost_sim.git
 ```
 then to update 
 ```
