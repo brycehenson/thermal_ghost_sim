@@ -155,19 +155,29 @@ else%calculate with the high memory mode
 parfor_progress_imp(0);
 
 %%
-diffs_to_store=5e2;
+
+
+diffs_to_store=corr_opts.diffs_to_store;
+radial_dep=((1:diffs_to_store).*(3/(4*pi))).^(1/3);
 mean_nth_rad_diff=nan(diffs_to_store,shots);
+distance_hist=histcounts([],corr_opts.diff_bins);
+distance_hist=zeros(diffs_to_store,size(distance_hist,2));
+diffs_each_shot=nan(shots,1);%for weighted mean
 for shotnum=1:shots
     ordered_delt_shot=ordered_delta{shotnum};
     diffs_avail=size(ordered_delt_shot,2);
+    diffs_each_shot(shotnum)=diffs_avail;
     padd_size=max(0,diffs_to_store-diffs_avail);
     max_idx=min(diffs_to_store,diffs_avail);
     %padd up to the requested size
     mean_nth_rad_diff(:,shotnum)=cat(2,nanmean(ordered_delt_shot(:,1:max_idx),1),nan(1,padd_size));
+    for ii=1:max_idx
+        distance_hist(ii,:)=distance_hist(ii,:)+histcounts(ordered_delt_shot(:,ii)./radial_dep(ii),corr_opts.diff_bins)/diffs_avail;
+    end
 end
-
-mean_nth_rad_diff=nanmean(mean_nth_rad_diff,2);
-radial_dep=((1:size(mean_nth_rad_diff,1)).*(3/(4*pi))).^(1/3);
+weights=diffs_each_shot/sum(diffs_each_shot);
+weights=repmat(weights,[1,diffs_to_store])';
+mean_nth_rad_diff=nanmean(mean_nth_rad_diff.*weights,2);
 
 mean_nth_rad_diff_reg=mean_nth_rad_diff./radial_dep';
 
@@ -177,7 +187,9 @@ mean_nth_rad_diff_reg=mean_nth_rad_diff./radial_dep';
 end 
 
 
-
+out.diff_bin_censy=(corr_opts.diff_bins(1:end-1)+corr_opts.diff_bins(2:end))/2;
+out.diff_bin_censx=(1:diffs_to_store)-1;
+out.distance_hist=distance_hist;
 out.mean_nth_rad_diff_raw=mean_nth_rad_diff;
 out.mean_nth_rad_diff_reg=mean_nth_rad_diff_reg;
 

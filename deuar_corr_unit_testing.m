@@ -7,7 +7,7 @@ this_folder = fileparts(which(mfilename));
 addpath(genpath(this_folder));
 
 %%
-fake_data=make_bloby_data(100,1);
+fake_data=make_bloby_data(300,1);
 
 % Verify blob
 sfigure(2);
@@ -18,6 +18,9 @@ scatter3(fake_data.counts_txy{1}(:,1),fake_data.counts_txy{1}(:,2),fake_data.cou
 corr_opts=[];
 corr_opts.cl_or_bb=false;
 corr_opts.progress_updates=10;
+corr_opts.diff_bins=linspace(1e-3,0.38,1e2);
+corr_opts.diffs_to_store=120;
+
 deuar_corr=corr_radial_deuar(corr_opts,fake_data.counts_txy);
 sfigure(1);
 set(gcf,'color','w')
@@ -38,16 +41,39 @@ scatter3(counts_chunked{1}(:,1),counts_chunked{1}(:,2),counts_chunked{1}(:,3))
 %%
 sfigure(1);
 subplot(3,1,1)
-plot(deuar_corr.mean_nth_rad_diff_raw(2:end))
+plot(deuar_corr.mean_nth_rad_diff_reg(2:end))
 ylabel('regularized distance')
 xlabel('nth nearest point')
 pause(1e-3)
 sfigure(1)
 subplot(3,1,2)
-plot(deuar_norm.mean_nth_rad_diff_norm(2:end))
+plot(deuar_norm.mean_nth_rad_diff_reg(2:end))
 ylabel('regularized distance')
 xlabel('nth nearest point')
 subplot(3,1,3)
 plot(deuar_norm.mean_nth_rad_diff_reg(2:end)./deuar_corr.mean_nth_rad_diff_reg(2:end))
 xlabel('nth nearest point')
 ylabel('normalized distance')
+
+
+%%
+sfigure(3)
+subplot(3,1,1)
+imagesc(deuar_corr.diff_bin_censx,deuar_corr.diff_bin_censy,deuar_corr.distance_hist')
+ylabel('regularized distance')
+xlabel('nth nearest point')
+set(gca,'YDir','normal')
+colormap(viridis)
+subplot(3,1,2)
+imagesc(deuar_norm.diff_bin_censx,deuar_norm.diff_bin_censy,deuar_norm.distance_hist')
+ylabel('regularized distance')
+xlabel('nth nearest point')
+set(gca,'YDir','normal')
+colormap(viridis)
+subplot(3,1,3)
+
+imagesc(deuar_norm.diff_bin_censx,deuar_norm.diff_bin_censy,(-deuar_norm.distance_hist+deuar_corr.distance_hist)')
+ylabel('regularized distance')
+xlabel('nth nearest point')
+set(gca,'YDir','normal')
+colormap(viridis)
