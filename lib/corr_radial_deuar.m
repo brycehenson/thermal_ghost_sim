@@ -158,7 +158,7 @@ parfor_progress_imp(0);
 
 
 diffs_to_store=corr_opts.diffs_to_store;
-radial_dep=((1:diffs_to_store).*(3/(4*pi))).^(1/3);
+radial_dep=(gamma(4/3)*1/2).*(((1:diffs_to_store)-1/2).*(6/(pi))).^(1/3);
 mean_nth_rad_diff=nan(diffs_to_store,shots);
 distance_hist=histcounts([],corr_opts.diff_bins);
 distance_hist=zeros(diffs_to_store,size(distance_hist,2));
@@ -172,7 +172,8 @@ for shotnum=1:shots
     %padd up to the requested size
     mean_nth_rad_diff(:,shotnum)=cat(2,nanmean(ordered_delt_shot(:,1:max_idx),1),nan(1,padd_size));
     for ii=1:max_idx
-        distance_hist(ii,:)=distance_hist(ii,:)+histcounts(ordered_delt_shot(:,ii)./radial_dep(ii),corr_opts.diff_bins)/diffs_avail;
+        %./radial_dep(ii)
+        distance_hist(ii,:)=distance_hist(ii,:)+histcounts(ordered_delt_shot(:,ii),corr_opts.diff_bins)/diffs_avail;
     end
 end
 weights=diffs_each_shot/sum(diffs_each_shot);
