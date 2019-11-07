@@ -1,4 +1,8 @@
 
+addpath('./lib/Core_BEC_Analysis/lib/') %add the path to set_up_project_path, this will change if Core_BEC_Analysis is included as a submodule
+                  % in this case it should be './lib/Core_BEC_Analysis/lib/'
+set_up_project_path
+
 %% fake dataset
 %fake_data=fake_cl_corr(100,1);
 %fake_data=fake_therm_cl_corr_small_hot(5000,1)
